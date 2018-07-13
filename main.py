@@ -81,7 +81,7 @@ class Sequence():
             string_values.append(str(term))
         return ', \n'.join(string_values)
 
-print(Sequence(1/n - 1/(n+1),1, 5, 5 ))
+
 
 
 
