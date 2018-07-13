@@ -9,9 +9,9 @@ class Term():
 
     def __str__(self):
         if str(type(self.value)) == "<class 'float'>":
-            return str(round(self.value, 3)) + '(' + 'color: ' + self.color + ')'
+            return str(round(self.value, 3))
         else:
-            return str(self.value) + ' (' + 'color: ' + self.color + ')'
+            return str(self.value)
 
     def __add__(self, other):
         return self.value + other.value
@@ -19,14 +19,14 @@ class Term():
     def __sub__(self, other):
         return self.value - other.value
 
-    def __eq__(self, other):
+    def cancel(self, other):
         if self.value == -other.value:
             return True
         else:
             return False
 
-class Sequence(Term):
-    def __init__(self, function, b, l, nt):
+class Sequence():
+    def __init__(self, function, s, e, nt):
 
         self.expr = function.apart()
         self.exprA = sympy.lambdify(n, self.expr.args[0])
@@ -35,16 +35,16 @@ class Sequence(Term):
         self.sequence = []
         self.endSequence = []
 
-    ## First l-terms
+    ## First e-terms
 
         # Build the sequence
-        for a in range(b, l + 1):
+        for a in range(s, e + 1):
             self.sequence.append(Term(self.exprA(a)))
             self.sequence.append(Term(self.exprB(a)))
 
         # Match cancelling terms
         for tuple in itertools.combinations(self.sequence, r=2):
-            if tuple[0] == tuple[1]:
+            if tuple[0].cancel(tuple[1]):
                 tuple[0].color = "Red"
                 tuple[1].color = "Red"
 
@@ -62,7 +62,7 @@ class Sequence(Term):
 
         # Match cancelling term
         for tuple in itertools.combinations(self.endSequence, r=2):
-            if tuple[0] == tuple[1]:
+            if tuple[0].cancel(tuple[1]):
                 tuple[0].color = "Red"
                 tuple[1].color = "Red"
 
@@ -81,7 +81,7 @@ class Sequence(Term):
             string_values.append(str(term))
         return ', \n'.join(string_values)
 
-
+print(Sequence(1/n - 1/(n+1),1, 5, 5 ))
 
 
 
