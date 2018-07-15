@@ -1,2 +1,2 @@
 # telescoping-series
-Classes for manipulating series / sequences using sympy
+Classes for identifying telescoping series with sympy.
