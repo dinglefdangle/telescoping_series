@@ -1,2 +1,4 @@
 # telescoping-series
-Classes for identifying telescoping series with sympy.
+Program which lists the terms of a series and tells you if any of those terms cancel out.
+
+Made with sympy.
