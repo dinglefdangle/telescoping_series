@@ -27,10 +27,6 @@ class Sequence():
         self.exprA = lambdify(n, self.expr.args[0])
         self.exprB = lambdify(n, self.expr.args[1])
 
-
-
-
-
     #~ First e-terms
         self.num_sequence = []
         # Build the sequence
