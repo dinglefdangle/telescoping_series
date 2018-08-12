@@ -1,6 +1,7 @@
-import sympy, itertools
-n = sympy.Symbol('n')
-N = sympy.Symbol('N')
+from sympy import Symbol, lambdify
+from itertools import combinations
+n = Symbol('n')
+N = Symbol('N')
 
 class Term():
     def __init__(self, value, color='Green'):
@@ -8,16 +9,10 @@ class Term():
         self.color = color
 
     def __str__(self):
-        if str(type(self.value)) == "<class 'float'>":
+        if type(self.value)is float: # when Term is numeric
             return str(round(self.value, 3))
-        else:
+        else: # when Term is symbolic
             return str(self.value)
-
-    def __add__(self, other):
-        return self.value + other.value
-
-    def __sub__(self, other):
-        return self.value - other.value
 
     def cancel(self, other):
         if self.value == -other.value:
@@ -26,62 +21,54 @@ class Term():
             return False
 
 class Sequence():
-    def __init__(self, function, s, e, nt):
+    def __init__(self, function, s, e, Ns):
 
         self.expr = function.apart()
-        self.exprA = sympy.lambdify(n, self.expr.args[0])
-        self.exprB = sympy.lambdify(n, self.expr.args[1])
+        self.exprA = lambdify(n, self.expr.args[0])
+        self.exprB = lambdify(n, self.expr.args[1])
 
-        self.sequence = []
-        self.endSequence = []
 
-    ## First e-terms
 
+
+
+    #~ First e-terms
+        self.num_sequence = []
         # Build the sequence
         for a in range(s, e + 1):
-            self.sequence.append(Term(self.exprA(a)))
-            self.sequence.append(Term(self.exprB(a)))
+            self.num_sequence.append(Term(self.exprA(a)))
+            self.num_sequence.append(Term(self.exprB(a)))
 
         # Match cancelling terms
-        for tuple in itertools.combinations(self.sequence, r=2):
+        for tuple in combinations(self.num_sequence, r=2):
             if tuple[0].cancel(tuple[1]):
                 tuple[0].color = "Red"
                 tuple[1].color = "Red"
+        self.num_sequence[-1].color = "Brown" # Last term brown
 
-        # Last term Brown
-        for i in range(len(self.sequence)):
-            if i == len(self.sequence) - 1:
-                self.sequence[i].color = "Brown"
-
-    ## N-terms
-
+    #~ N-terms
+        self.end_sequence = []
         # Build the sequence
-        for i in reversed(range(nt)):
-            self.endSequence.append(Term(self.exprA(N - i)))
-            self.endSequence.append(Term(self.exprB(N - i)))
+        for i in reversed(range(Ns + 1)):
+            self.end_sequence.append(Term(self.exprA(N - i)))
+            self.end_sequence.append(Term(self.exprB(N - i)))
 
-        # Match cancelling term
-        for tuple in itertools.combinations(self.endSequence, r=2):
+        # Match cancelling terms
+        for tuple in combinations(self.end_sequence, r=2):
             if tuple[0].cancel(tuple[1]):
                 tuple[0].color = "Red"
                 tuple[1].color = "Red"
+        self.end_sequence[0].color = "Brown" # Last term Brown
 
-        # Last term Brown
-        for i in reversed((range(len(self.endSequence)))):
-            if i == 0:
-                self.endSequence[i].color = "Brown"
+    #~ Concatenate sequences
 
-        # Concatenate sequences
-        self.sequence += self.endSequence
+        self.sequence = self.num_sequence + self.end_sequence
 
     def __str__(self):
 
-        string_values = []
+        output = []
         for term in self.sequence:
-            string_values.append(str(term))
-        return ', \n'.join(string_values)
-
-
+            output.append(str(term) + ' ' + term.color)
+        return ', \n'.join(output)
 
 
 
